@@ -184,8 +184,9 @@ tr:nth-child(even) td { background: var(--bg-soft); }
   background: var(--bg);
   display: flex;
   flex-direction: column;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
-.article-card:hover { border-color: var(--blue); box-shadow: 0 2px 10px rgba(28, 43, 28, 0.08); }
+.article-card:hover { border-color: var(--blue); box-shadow: 0 6px 18px rgba(28, 43, 28, 0.12); transform: translateY(-3px); }
 .article-card h3 { margin: 0 0 0.5rem; font-size: 1.12rem; line-height: 1.4; }
 .article-card h3 a { color: var(--navy); text-decoration: none; }
 .article-card h3 a:hover { color: var(--blue); text-decoration: underline; }
@@ -277,4 +278,36 @@ tr:nth-child(even) td { background: var(--bg-soft); }
 @media print {
   .site-header, .site-footer, .ad-slot { display: none; }
   body { font-size: 12pt; }
+}
+
+/* ---------- Light motion (added 2026-11-23) ----------
+   Halka aur saaf motion only: opacity + transform, no layout shift.
+   Reveal states are gated behind .js on <html> (added by motion.js),
+   so content stays fully visible when JS is disabled or fails. */
+
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero .hero-badge { animation: hero-rise 0.6s ease-out both; }
+.hero h1 { animation: hero-rise 0.6s ease-out 0.1s both; }
+.hero p.lead { animation: hero-rise 0.6s ease-out 0.2s both; }
+
+/* Scroll reveal — hidden only when JS is active */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+.js .reveal.is-visible { opacity: 1; transform: none; }
+/* Revealed cards keep their quick 0.25s hover transition */
+.js .article-card.reveal.is-visible {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .hero .hero-badge, .hero h1, .hero p.lead { animation: none; }
+  .js .reveal { opacity: 1; transform: none; transition: none; }
+  .article-card, .article-card:hover { transition: none; transform: none; }
 }
